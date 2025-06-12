@@ -1,30 +1,27 @@
-import numpy as np
 import matplotlib.pyplot as plt
-class KMeans:
-    def __init__(self, k, max_iters=1000):
-        self.k = k
-        self.max_iters = max_iters
-    def _init_centroids(self, X):
-        np.random.seed(0)
-        indices = np.random.choice(X.shape[0], self.k, replace=False)
-        return X[indices]
-    def _assign_clusters(self, X, centroids):
-        return np.argmin(np.sqrt(((X - centroids[:, np.newaxis])**2).sum(axis=2)), axis=0)
-    def _update_centroids(self, X, labels):
-        return np.array([X[labels == i].mean(axis=0) for i in range(self.k)])
-    def fit(self, X):
-        centroids = self._init_centroids(X)
-        for _ in range(self.max_iters):
-            labels = self._assign_clusters(X, centroids)
-            new_centroids = self._update_centroids(X, labels)
-            if np.all(centroids == new_centroids):
-                break
-            centroids = new_centroids
-        return centroids, labels
+from sklearn.cluster import KMeans
+import numpy as np
 
-X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
-kmeans = KMeans(k=2)
-centroids, labels = kmeans.fit(X)
-plt.scatter(X[:, 0], X[:, 1], c=labels)
-plt.scatter(centroids[:, 0], centroids[:, 1], c='black', s=200, alpha=0.5)
-plt.show( )
+# Sample data (replace with your actual data)
+X = np.array([[1, 2], [1, 4], [1, 0], [10, 8], [10, 10], [10, 12]])
+
+# Choose the number of clusters (k)
+k = 2
+
+# Initialize and fit the K-Means model
+kmeans = KMeans(n_clusters=k, random_state=0, n_init="auto")
+kmeans.fit(X)
+
+# Get the cluster labels
+labels = kmeans.labels_
+
+# Get the cluster centers (centroids)
+centroids = kmeans.cluster_centers_
+
+# Visualize the results
+plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='rainbow')
+plt.scatter(centroids[:, 0], centroids[:, 1], marker='x', s=200, color='black')
+plt.title("K-Means Clustering")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.show()
